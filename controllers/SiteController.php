@@ -9,6 +9,9 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\News;
+use app\models\AddNewsForm;
+use yii\data\Pagination;
 
 class SiteController extends Controller
 {
@@ -126,7 +129,27 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
-    public function actionHello(){
-        return $this->render('hello');
+    public function actionNews(){
+
+        $news = News::find();
+
+        $form = new AddNewsForm();
+
+        $pagination = new Pagination([
+            'defaultPageSize' => 2,
+            'totalCount' => $news->count()
+        ]);
+
+        $news = $news->offset($pagination->offset)
+        ->limit($pagination->limit)
+        ->all();
+        
+        return $this->render('news',
+            [
+                'news'=>$news,
+                'pagination'=>$pagination,
+                'form'=>$form
+            ]
+        );
     }
 }
